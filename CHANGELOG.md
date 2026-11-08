@@ -2,4 +2,4 @@
 
 ## 0.1.0
 
-First public release for Umbraco 17. Share links, a rate-limited like count remembered with a per-post cookie, reading time, and a most-liked dashboard.
+First public release for Umbraco 17. Share links, rate-limited likes with the count stored on the server and a per-post cookie that remembers the visitor liked it, reading time, and a most-liked dashboard.
