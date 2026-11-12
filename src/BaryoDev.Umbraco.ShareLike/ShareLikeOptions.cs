@@ -16,7 +16,11 @@ public sealed class ShareLikeOptions
 
     public static readonly string[] DefaultShareTargets = ["linkedin", "x", "facebook", "email", "native", "copy"];
 
+    /// <summary>Host name only, such as mastodon.social. No scheme, path, port or credentials.</summary>
     public string MastodonInstance { get; set; } = "mastodon.social";
+
+    public static bool IsBareHost(string? value) =>
+        !string.IsNullOrEmpty(value) && Uri.CheckHostName(value) == UriHostNameType.Dns;
 
     public int LikePermitLimit { get; set; } = 10;
     public int LikeWindowSeconds { get; set; } = 60;

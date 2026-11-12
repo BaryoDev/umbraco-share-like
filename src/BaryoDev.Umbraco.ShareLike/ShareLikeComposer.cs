@@ -17,7 +17,12 @@ public sealed class ShareLikeComposer : IComposer
 {
     public void Compose(IUmbracoBuilder builder)
     {
-        builder.Services.AddOptions<ShareLikeOptions>().BindConfiguration(ShareLikeOptions.Section);
+        builder.Services.AddOptions<ShareLikeOptions>()
+            .BindConfiguration(ShareLikeOptions.Section)
+            .Validate(
+                o => ShareLikeOptions.IsBareHost(o.MastodonInstance),
+                "BaryoDev:ShareLike:MastodonInstance must be a bare host name such as mastodon.social, with no scheme, path, port or credentials.")
+            .ValidateOnStart();
         // The binder appends to array defaults, so the default list is applied here when nothing is configured.
         builder.Services.PostConfigure<ShareLikeOptions>(o =>
         {

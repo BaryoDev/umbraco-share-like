@@ -40,4 +40,24 @@ public class ReadingTimeTests
     {
         Assert.Null(ReadingTimeCalculator.MinutesFor(html, 200));
     }
+
+    [Fact]
+    public void A_long_run_of_open_brackets_is_not_quadratic()
+    {
+        var html = new string('<', 1_000_000) + " word";
+
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+        var minutes = ReadingTimeCalculator.MinutesFor(html, 200);
+        watch.Stop();
+
+        Assert.Equal(1, minutes);
+        Assert.True(watch.Elapsed < TimeSpan.FromSeconds(2), $"took {watch.Elapsed}");
+    }
+
+    [Fact]
+    public void Text_around_unclosed_brackets_still_counts()
+    {
+        Assert.Equal(1, ReadingTimeCalculator.MinutesFor("<p>one</p> two < three", 2));
+        Assert.Equal(2, ReadingTimeCalculator.MinutesFor("<p>one</p> two < three four five", 2));
+    }
 }
