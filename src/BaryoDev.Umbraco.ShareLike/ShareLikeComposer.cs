@@ -20,7 +20,9 @@ public sealed class ShareLikeComposer : IComposer
         builder.Services.AddOptions<ShareLikeOptions>()
             .BindConfiguration(ShareLikeOptions.Section)
             .Validate(
-                o => ShareLikeOptions.IsBareHost(o.MastodonInstance),
+                o => ShareLikeOptions.IsBareHost(o.MastodonInstance)
+                    || (string.IsNullOrWhiteSpace(o.MastodonInstance)
+                        && !o.ShareTargets.Contains("mastodon", StringComparer.OrdinalIgnoreCase)),
                 "BaryoDev:ShareLike:MastodonInstance must be a bare host name such as mastodon.social, with no scheme, path, port or credentials.")
             .ValidateOnStart();
         // The binder appends to array defaults, so the default list is applied here when nothing is configured.

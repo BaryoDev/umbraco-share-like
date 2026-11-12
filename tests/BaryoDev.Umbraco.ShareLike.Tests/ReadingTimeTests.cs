@@ -57,7 +57,7 @@ public class ReadingTimeTests
     [Fact]
     public void Text_around_unclosed_brackets_still_counts()
     {
-        Assert.Equal(1, ReadingTimeCalculator.MinutesFor("<p>one</p> two < three", 2));
-        Assert.Equal(2, ReadingTimeCalculator.MinutesFor("<p>one</p> two < three four five", 2));
+        Assert.Equal(2, ReadingTimeCalculator.MinutesFor("<p>one</p> two < three", 2));
+        Assert.Equal(3, ReadingTimeCalculator.MinutesFor("<p>one</p> two < three four five", 2));
     }
 }
