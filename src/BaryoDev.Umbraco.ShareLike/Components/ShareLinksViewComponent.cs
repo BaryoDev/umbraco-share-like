@@ -18,7 +18,8 @@ public sealed class ShareLinksViewComponent(
         var o = options.CurrentValue;
         url ??= content is null ? null : urls.GetUrl(content, UrlMode.Absolute);
         title ??= content?.Name;
-        if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(title))
+        // Umbraco answers "#" for content that has no URL of its own.
+        if (string.IsNullOrWhiteSpace(url) || url == "#" || string.IsNullOrWhiteSpace(title))
         {
             return Content(string.Empty);
         }

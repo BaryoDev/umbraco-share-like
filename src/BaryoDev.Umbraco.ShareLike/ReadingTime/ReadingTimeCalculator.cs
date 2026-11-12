@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using System.Text;
 using Microsoft.Extensions.Options;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
@@ -12,7 +12,7 @@ public interface IReadingTimeCalculator
     string? Format(IPublishedContent content, string? propertyAlias = null);
 }
 
-public sealed partial class ReadingTimeCalculator(IOptionsMonitor<ShareLikeOptions> options) : IReadingTimeCalculator
+public sealed class ReadingTimeCalculator(IOptionsMonitor<ShareLikeOptions> options) : IReadingTimeCalculator
 {
     public int? Minutes(IPublishedContent content, string? propertyAlias = null)
     {
@@ -34,7 +34,7 @@ public sealed partial class ReadingTimeCalculator(IOptionsMonitor<ShareLikeOptio
             return null;
         }
 
-        var text = System.Net.WebUtility.HtmlDecode(Tags().Replace(html, " "));
+        var text = System.Net.WebUtility.HtmlDecode(StripTags(html));
         var words = text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
         if (words == 0)
         {
@@ -44,6 +44,29 @@ public sealed partial class ReadingTimeCalculator(IOptionsMonitor<ShareLikeOptio
         return Math.Max(1, (int)Math.Ceiling(words / (double)Math.Max(1, wordsPerMinute)));
     }
 
-    [GeneratedRegex("<[^>]*>")]
-    private static partial Regex Tags();
+    // One pass. A '<' with no '>' after it cannot start a tag, and neither can any later '<'.
+    private static string StripTags(string html)
+    {
+        var sb = new StringBuilder(html.Length);
+        var pos = 0;
+        while (pos < html.Length)
+        {
+            var open = html.IndexOf('<', pos);
+            if (open < 0)
+            {
+                break;
+            }
+
+            var close = html.IndexOf('>', open + 1);
+            if (close < 0)
+            {
+                break;
+            }
+
+            sb.Append(html, pos, open - pos).Append(' ');
+            pos = close + 1;
+        }
+
+        return sb.Append(html, pos, html.Length - pos).ToString();
+    }
 }

@@ -69,4 +69,44 @@ public class ShareLikeOptionsTests
 
         Assert.Equal(ShareLikeOptions.DefaultShareTargets, options.ShareTargets);
     }
+
+    [Theory]
+    [InlineData("mastodon.social")]
+    [InlineData("social.example.org")]
+    public void A_bare_host_is_accepted(string host)
+    {
+        var options = Resolve(config: new() { ["BaryoDev:ShareLike:MastodonInstance"] = host });
+
+        Assert.Equal(host, options.MastodonInstance);
+    }
+
+    [Theory]
+    [InlineData("https://mastodon.social")]
+    [InlineData("mastodon.social/path")]
+    [InlineData("mastodon.social?x=1")]
+    [InlineData("user@evil.example")]
+    [InlineData("mastodon.social:8443")]
+    public void A_host_with_a_scheme_path_port_or_credentials_fails_validation(string host)
+    {
+        Assert.Throws<OptionsValidationException>(() =>
+            Resolve(config: new() { ["BaryoDev:ShareLike:MastodonInstance"] = host }));
+    }
+
+    [Fact]
+    public void A_blank_instance_is_fine_when_mastodon_is_not_a_target()
+    {
+        var options = Resolve(config: new() { ["BaryoDev:ShareLike:MastodonInstance"] = "" });
+
+        Assert.Equal("", options.MastodonInstance);
+    }
+
+    [Fact]
+    public void A_blank_instance_fails_when_mastodon_is_a_target()
+    {
+        Assert.Throws<OptionsValidationException>(() => Resolve(config: new()
+        {
+            ["BaryoDev:ShareLike:MastodonInstance"] = "",
+            ["BaryoDev:ShareLike:ShareTargets:0"] = "mastodon",
+        }));
+    }
 }

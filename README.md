@@ -65,7 +65,7 @@ The CSS uses custom properties with the baryo.dev value as the fallback. Overrid
 ## Likes
 
 - `POST /api/sharelike/likes/{key}` adds one like. The content must be published and its type listed in `LikeContentTypes`.
-- One like per visitor per item, through a cookie (`bd_liked_{key}`). `like.js` reads it to show the liked state, so the HTML is the same for every visitor and can be cached.
+- One like per browser per item, through a cookie (`bd_liked_{key}`). Clearing cookies allows another like, within the rate limit. `like.js` reads it to show the liked state, so the HTML is the same for every visitor and can be cached.
 - A cross-site POST gets 403 (`Sec-Fetch-Site`, or `Origin` when that is missing). A request with neither header is allowed.
 - Rate limited per address (default 10 per minute). The address is hashed with a salt that lives in memory and changes every UTC day. It is never stored. IPv6 is cut to the /64.
 - Behind a proxy, set up forwarded headers so the real address reaches the limiter.
